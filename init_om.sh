@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCM_HOST=$1
+
 # run as 'hdfs' user
 # clean up O directory
 if [ ! -d "/var/lib/hadoop-ozone/fake_om" ]; then
@@ -34,7 +36,7 @@ cat > /tmp/ozone-1.1.0-SNAPSHOT/etc/hadoop/ozone-site.xml <<EOF
         </property>
         <property>
                 <name>ozone.scm.names</name>
-                <value>weichiu-2.weichiu.root.hwx.site</value>
+                <value>$SCM_HOST</value>
         </property>
 </configuration>
 

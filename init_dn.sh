@@ -1,6 +1,7 @@
 #!/bin/bash
 
 dn_id="$1"
+SCM_HOST=$2
 
 # run as 'hdfs' user
 # clean up O directory
@@ -34,15 +35,17 @@ cat > /tmp/ozone-1.1.0-SNAPSHOT/etc/hadoop/ozone-site.xml <<EOF
         </property>
         <property>
                 <name>ozone.scm.names</name>
-                <value>weichiu-2.weichiu.root.hwx.site</value>
+                <value>$SCM_HOST</value>
         </property>
 </configuration>
 
 EOF
 
-# FIXME: need to update datanode id too
 
 dn_uuid=`head -n${dn_id} /tmp/dn_uuid.txt |tail -n1`
+
+sed -i "s/  uuid:.*/  uuid: $dn_uuid/" /var/lib/hadoop-ozone/datanode/datanode.id
+
 
 cd /tmp/ozone-1.1.0-SNAPSHOT/bin
 export JAVA_HOME=/usr/java/jdk1.8.0_232-cloudera/

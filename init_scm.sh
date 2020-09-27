@@ -1,5 +1,8 @@
 #!/bin/bash
 
+SCM_HOST=$1
+
+# this script runs on the SCM host
 # run as 'hdfs' user
 
 # clean up SCM directory
@@ -22,7 +25,7 @@ cat > /tmp/ozone-1.1.0-SNAPSHOT/etc/hadoop/ozone-site.xml <<EOF
         </property>
         <property>
                 <name>ozone.scm.names</name>
-                <value>weichiu-2.weichiu.root.hwx.site</value>
+                <value>$SCM_HOST</value>
         </property>
         <property>
                 <name>ozone.scm.datanode.id.dir</name>
@@ -31,6 +34,10 @@ cat > /tmp/ozone-1.1.0-SNAPSHOT/etc/hadoop/ozone-site.xml <<EOF
         <property>
                 <name>hdds.datanode.dir</name>
                 <value>/var/lib/hadoop-ozone/fake_datanode/data</value>
+        </property>
+        <property>
+                <name>ozone.metadata.dirs</name>
+                <value>/var/lib/hadoop-ozone/fake_datanode/ozone-metadata</value>
         </property>
 </configuration>
 
