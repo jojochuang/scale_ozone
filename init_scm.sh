@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /tmp/conf.sh
+
 SCM_HOST=$1
 
 # this script runs on the SCM host
@@ -47,8 +49,8 @@ mkdir -p /var/lib/hadoop-ozone/fake_scm/data/scm/current
 cat >  /var/lib/hadoop-ozone/fake_scm/data/scm/current/VERSION <<EOF
 #Thu Sep 24 08:50:03 UTC 2020
 nodeType=SCM
-scmUuid=2245531e-8737-4d7b-879d-7e8af82ccf56
-clusterID=CID-020e0a3f-13e2-4f36-89b2-065b6667b78e
+scmUuid=$SCM_ID
+clusterID=$CLUSTER_ID
 cTime=1600937403500
 layoutVersion=0
 EOF

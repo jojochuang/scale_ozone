@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /tmp/conf.sh
+
 SCM_HOST=$1
 
 # run as 'hdfs' user
@@ -45,10 +47,10 @@ EOF
 cat >  /var/lib/hadoop-ozone/fake_om/data/om/current/VERSION <<EOF
 #Tue Sep 22 23:33:48 UTC 2020
 nodeType=OM
-scmUuid=2245531e-8737-4d7b-879d-7e8af82ccf56
-clusterID=CID-020e0a3f-13e2-4f36-89b2-065b6667b78e
+scmUuid=$SCM_ID
+clusterID=$CLUSTER_ID
 cTime=1600817627795
-omUuid=216f270f-aa3a-4a7b-bc81-27baa5cdd108
+omUuid=$OM_UUID
 layoutVersion=0
 EOF
 

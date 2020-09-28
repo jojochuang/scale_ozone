@@ -4,7 +4,8 @@ source conf.sh
 
 for i in "${DN_HOSTNAME[@]}"; do
 	hostname=$i$CLUSTER_DOMAIN
-	echo "Create OCM data on " $hostname
+	echo "Create DN data on " $hostname
+	scp conf.sh root@$hostname:/tmp/
 	scp init_dn.sh root@$hostname:/tmp/
 	scp dn_uuid.txt root@$hostname:/tmp/
 
@@ -17,7 +18,7 @@ dn_index=1
 
 for i in "${DN_HOSTNAME[@]}"; do
 	hostname=$i$CLUSTER_DOMAIN
-	ssh root@$hostname sudo -u hdfs bash /tmp/init_dn.sh ${dn_index} $SCM_HOST
+	ssh root@$hostname sudo -u hdfs bash /tmp/init_dn.sh ${dn_index} &
 	dn_index=$(($dn_index + 1))
 done
 

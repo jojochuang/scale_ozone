@@ -3,6 +3,7 @@
 source conf.sh
 echo "Create SCM data on " $SCM_HOST
 
+scp conf.sh root@$SCM_HOST:/tmp/
 scp init_scm.sh root@$SCM_HOST:/tmp/
 scp gen_scm.sh root@$SCM_HOST:/tmp/
 scp dn_uuid.txt root@$SCM_HOST:/tmp/

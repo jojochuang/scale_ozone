@@ -4,6 +4,7 @@ source conf.sh
 
 echo "Create OCM data on " $OM_HOST
 
+scp conf.sh root@$OM_HOST:/tmp/
 scp init_om.sh root@$OM_HOST:/tmp/
 scp gen_om.sh root@$OM_HOST:/tmp/
 scp dn_uuid.txt root@$OM_HOST:/tmp/
