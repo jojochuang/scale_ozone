@@ -35,7 +35,7 @@ cat > /tmp/ozone-1.1.0-SNAPSHOT/etc/hadoop/ozone-site.xml <<EOF
         </property>
         <property>
                 <name>hdds.datanode.dir</name>
-                <value>/var/lib/hadoop-ozone/fake_datanode/data</value>
+                <value>/data/disk1/hadoop-ozone/datanode/data,/data/disk10/hadoop-ozone/datanode/data,/data/disk11/hadoop-ozone/datanode/data,/data/disk12/hadoop-ozone/datanode/data,/data/disk13/hadoop-ozone/datanode/data,/data/disk14/hadoop-ozone/datanode/data,/data/disk15/hadoop-ozone/datanode/data,/data/disk16/hadoop-ozone/datanode/data,/data/disk17/hadoop-ozone/datanode/data,/data/disk18/hadoop-ozone/datanode/data,/data/disk19/hadoop-ozone/datanode/data,/data/disk2/hadoop-ozone/datanode/data,/data/disk20/hadoop-ozone/datanode/data,/data/disk21/hadoop-ozone/datanode/data,/data/disk22/hadoop-ozone/datanode/data,/data/disk23/hadoop-ozone/datanode/data,/data/disk24/hadoop-ozone/datanode/data,/data/disk25/hadoop-ozone/datanode/data,/data/disk26/hadoop-ozone/datanode/data,/data/disk27/hadoop-ozone/datanode/data,/data/disk28/hadoop-ozone/datanode/data,/data/disk29/hadoop-ozone/datanode/data,/data/disk3/hadoop-ozone/datanode/data,/data/disk30/hadoop-ozone/datanode/data,/data/disk31/hadoop-ozone/datanode/data,/data/disk32/hadoop-ozone/datanode/data,/data/disk33/hadoop-ozone/datanode/data,/data/disk34/hadoop-ozone/datanode/data,/data/disk35/hadoop-ozone/datanode/data,/data/disk36/hadoop-ozone/datanode/data,/data/disk37/hadoop-ozone/datanode/data,/data/disk38/hadoop-ozone/datanode/data,/data/disk39/hadoop-ozone/datanode/data,/data/disk4/hadoop-ozone/datanode/data,/data/disk40/hadoop-ozone/datanode/data,/data/disk41/hadoop-ozone/datanode/data,/data/disk42/hadoop-ozone/datanode/data,/data/disk43/hadoop-ozone/datanode/data,/data/disk44/hadoop-ozone/datanode/data,/data/disk45/hadoop-ozone/datanode/data,/data/disk46/hadoop-ozone/datanode/data,/data/disk47/hadoop-ozone/datanode/data,/data/disk48/hadoop-ozone/datanode/data,/data/disk5/hadoop-ozone/datanode/data,/data/disk6/hadoop-ozone/datanode/data,/data/disk7/hadoop-ozone/datanode/data,/data/disk8/hadoop-ozone/datanode/data,/data/disk9/hadoop-ozone/datanode/data</value>
         </property>
         <property>
                 <name>ozone.metadata.dirs</name>
@@ -56,7 +56,7 @@ layoutVersion=0
 EOF
 
 cd /tmp/ozone-1.1.0-SNAPSHOT/bin
-export JAVA_HOME=/usr/java/jdk1.8.0_232-cloudera/
+export JAVA_HOME=/usr/java/jdk1.8.0_261-amd64
 #./ozone scm --init
 cat /var/lib/hadoop-ozone/fake_scm/data/scm/current/VERSION
 

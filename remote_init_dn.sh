@@ -4,6 +4,11 @@ source conf.sh
 
 for i in "${DN_HOSTNAME[@]}"; do
 	hostname=$i$CLUSTER_DOMAIN
+	ssh root@${hostname} "rm -rf /data/*/hadoop-ozone/datanode/data/hdds/*"
+done
+
+for i in "${DN_HOSTNAME[@]}"; do
+	hostname=$i$CLUSTER_DOMAIN
 	echo "Create DN data on " $hostname
 	scp conf.sh root@$hostname:/tmp/
 	scp init_dn.sh root@$hostname:/tmp/

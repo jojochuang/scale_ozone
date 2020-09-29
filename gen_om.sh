@@ -8,7 +8,7 @@ dn_uuid=`head -n${dn_total} /tmp/dn_uuid.txt | paste -sd "," -`
 echo "Generating OM for " $dn_total " DataNodes."
 
 cd /tmp/ozone-1.1.0-SNAPSHOT/bin
-export JAVA_HOME=/usr/java/jdk1.8.0_232-cloudera/
+export JAVA_HOME=/usr/java/jdk1.8.0_261-amd64
 ./ozone freon cg --user-id hdfs --cluster-id $CLUSTER_ID \
 	--datanode-id $dn_uuid \
 	--scm-id $SCM_ID \
