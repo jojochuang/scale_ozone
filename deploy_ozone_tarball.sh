@@ -39,7 +39,7 @@ done
 for i in "${ALL_NODES[@]}"; do
 	hostname=$i$CLUSTER_DOMAIN
 	echo "update ownership at host " $hostname
-	ssh root@$hostname "chmod -R 777 /tmp/ozone-1.1.0-SNAPSHOT/" &
+	ssh root@$hostname "chmod -R 777 $OZONE_BINARY_ROOT" &
 done
 
 for job in `jobs -p`

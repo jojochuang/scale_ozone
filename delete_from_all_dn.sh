@@ -1,4 +1,22 @@
 #!/bin/bash
 
-DATANODES=$(seq 71 86)
-for i in ${DATANODES[@]}; do ssh root@10.12.1.${i} "rm -rf /data/*/hadoop-ozone/datanode/data/hdds/*"; done
+source conf.sh
+for dn in ${DN_HOSTNAME[@]}; do
+	scp delete_from_all_disks.sh root@$dn$CLUSTER_DOMAIN:/tmp/ &
+done
+
+for job in `jobs -p`
+do
+	echo "Waiting for completion of job " $job
+	wait $job
+done
+
+for dn in ${DN_HOSTNAME[@]}; do
+	ssh root@${dn}$CLUSTER_DOMAIN /tmp/delete_from_all_disks.sh &
+done
+
+for job in `jobs -p`
+do
+	echo "Waiting for completion of job " $job
+	wait $job
+done

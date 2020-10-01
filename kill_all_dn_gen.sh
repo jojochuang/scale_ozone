@@ -1,2 +1,6 @@
 #!/bin/bash
-for i in ${DATANODES[@]}; do ssh root@10.12.1.${i} "pkill -f freon"; done
+
+source conf.sh
+for i in ${DN_HOSTNAME[@]}; do
+	ssh root@${i}$CLUSTER_DOMAIN "pkill -f freon" &
+done

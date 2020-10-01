@@ -14,7 +14,7 @@ rm -rf /var/lib/hadoop-ozone/fake_om/data
 chmod 777 -R /var/lib/hadoop-ozone/fake_om
 mkdir -p /var/lib/hadoop-ozone/fake_om/data/om/current
 
-cat > /tmp/ozone-1.1.0-SNAPSHOT/etc/hadoop/ozone-site.xml <<EOF
+cat > $OZONE_BINARY_ROOT/etc/hadoop/ozone-site.xml <<EOF
 
 <configuration>
         <property>
@@ -57,7 +57,7 @@ omUuid=$OM_UUID
 layoutVersion=0
 EOF
 
-cd /tmp/ozone-1.1.0-SNAPSHOT/bin
+cd $OZONE_BINARY_ROOT/bin
 export JAVA_HOME=/usr/java/jdk1.8.0_261-amd64
 ./ozone om --init
 cat /var/lib/hadoop-ozone/fake_om/data/om/current/VERSION
