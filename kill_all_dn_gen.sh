@@ -1,6 +1,6 @@
 #!/bin/bash
 
 source conf.sh
-for i in ${DN_HOSTNAME[@]}; do
+for i in ${ALL_NODES[@]}; do
 	ssh root@${i}$CLUSTER_DOMAIN "pkill -f freon" &
 done

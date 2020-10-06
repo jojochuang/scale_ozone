@@ -11,7 +11,7 @@ ulimit -u 1048576
 
 export JAVA_HOME=/usr/java/jdk1.8.0_261-amd64
 #export HADOOP_OPTS="-Xmx40960M $HADOOP_OPTS"
-export OZONE_FREON_OPTS="-Xmx10240M $OZONE_FREON_OPTS"
+OZONE_FREON_OPTS_BASE="-Xmx81920M $OZONE_FREON_OPTS"
 
 # run as 'hdfs' user
 # clean up O directory
@@ -20,12 +20,12 @@ if [ ! -d "/var/lib/hadoop-ozone/fake_datanode" ]; then
 fi
 echo "Removing existing data from fake_datanode directory"
 rm -rf /var/lib/hadoop-ozone/fake_datanode/data
+rm -rf /var/lib/hadoop-ozone/datanode/ratis/data
 
 dn_uuid=`head -n${dn_id} /tmp/dn_uuid.txt |tail -n1`
 
 sed -i "s/  uuid:.*/  uuid: $dn_uuid/" /var/lib/hadoop-ozone/datanode/datanode.id
 
-# FIXME: update this array to support more than 2 datagen instances per DN.
 data_dirs=()
 DISKS_TOTAL=48
 DATAGEN_THREADS=96
@@ -58,6 +58,11 @@ for datagen in $(seq 1 $DATA_GEN_INSTANCE_PER_DN); do
 done
 
 for datagen_id in $(seq 0 $(($DATA_GEN_INSTANCE_PER_DN-1)) ); do
+	# add JMX connection to allow profiling
+	PROFILER_PORT=$(( 1089 + $datagen_id))
+	PROFILER="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=$PROFILER_PORT -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
+	export OZONE_FREON_OPTS="$PROFILER $OZONE_FREON_OPTS_BASE"
+
 	DN_DATAGEN_CONFIG_PATH=${DN_DATAGEN_CONFIG_PATHS[$datagen_id]}
 	echo "Data Generator instance " $datagen " on DN " $dn_id
 	echo "Creating config file in " $DN_DATAGEN_CONFIG_PATH
@@ -174,7 +179,7 @@ EOF
 			-n $TOTAL_CONTAINERS_FOR_THIS_DATAGEN_INSTANCE \
 			--container-id-offset $container_id_offset \
 			--container-id-increment $container_id_increment \
-			--key-id-offset $key_id_offset &
+			--key-id-offset $key_id_offset 2>&1 | tee $DN_DATAGEN_CONFIG_PATH/init_dn.log &
 	fi
 
 done
@@ -186,7 +191,7 @@ do
 done
 
 
-for datagen_id in $(seq 1 $DATA_GEN_INSTANCE_PER_DN); do
-	DN_DATAGEN_CONFIG_PATH=${DN_DATAGEN_CONFIG_PATHS[$datagen_id-1]}
-	rm -rf $DN_DATAGEN_CONFIG_PATH
-done
+#for datagen_id in $(seq 1 $DATA_GEN_INSTANCE_PER_DN); do
+#	DN_DATAGEN_CONFIG_PATH=${DN_DATAGEN_CONFIG_PATHS[$datagen_id-1]}
+#	rm -rf $DN_DATAGEN_CONFIG_PATH
+#done

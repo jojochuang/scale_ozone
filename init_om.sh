@@ -1,6 +1,9 @@
 #!/bin/bash
 
 source /tmp/conf.sh
+ulimit -n 1048576
+ulimit -u 1048576
+
 
 SCM_HOST=$1
 OM_INDEX=$2
@@ -10,6 +13,7 @@ OM_INDEX=$2
 if [ ! -d "/var/lib/hadoop-ozone/fake_om" ]; then
 	mkdir /var/lib/hadoop-ozone/fake_om
 fi
+rm -rf /var/lib/hadoop-ozone/om/ratis
 rm -rf /var/lib/hadoop-ozone/fake_om/data
 chmod 777 -R /var/lib/hadoop-ozone/fake_om
 mkdir -p /var/lib/hadoop-ozone/fake_om/data/om/current
