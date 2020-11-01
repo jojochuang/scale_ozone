@@ -1,12 +1,6 @@
 #!/bin/bash
 
-source conf.sh
-
-OZONE_TARBALL="hadoop-ozone-1.1.0-SNAPSHOT.tar.gz"
-
-#first_node=${DN_HOSTNAME[0]}$CLUSTER_DOMAIN
-#echo "sending the ozone tarball to the first node " $first_node
-#rsync -aP /tmp/$OZONE_TARBALL root@$first_node:/tmp/
+source `dirname "$0"`/conf.sh
 
 for i in "${ALL_NODES[@]}"; do
 	hostname=$i$CLUSTER_DOMAIN
@@ -14,8 +8,10 @@ for i in "${ALL_NODES[@]}"; do
 	#	continue
 	#fi
 	#echo "tell the first node to rsync the tarball with " $hostname
-	echo "sending tarball to " $hostname
-	rsync -aP -e 'ssh -o StrictHostKeyChecking=no' /tmp/$OZONE_TARBALL root@$hostname:/tmp/ &
+	if [ $hostname != `hostname` ]; then
+		echo "sending tarball to " $hostname
+		rsync -aP -e 'ssh -o StrictHostKeyChecking=no' /tmp/$OZONE_TARBALL $SSH_PASSWORDLESS_USER@$hostname:/tmp/ &
+	fi
 done
 
 for job in `jobs -p`
@@ -27,7 +23,7 @@ done
 for i in "${ALL_NODES[@]}"; do
 	hostname=$i$CLUSTER_DOMAIN
 	echo "untar at host " $hostname
-	ssh root@$hostname "cd /tmp && tar zxf /tmp/$OZONE_TARBALL" &
+	$SSH $SSH_PASSWORDLESS_USER@$hostname "cd /tmp && tar zxf /tmp/$OZONE_TARBALL" &
 done
 
 for job in `jobs -p`
@@ -39,7 +35,7 @@ done
 for i in "${ALL_NODES[@]}"; do
 	hostname=$i$CLUSTER_DOMAIN
 	echo "update ownership at host " $hostname
-	ssh root@$hostname "chmod -R 777 $OZONE_BINARY_ROOT" &
+	$SSH $SSH_PASSWORDLESS_USER@$hostname "chmod -R 777 $OZONE_BINARY_ROOT" &
 done
 
 for job in `jobs -p`

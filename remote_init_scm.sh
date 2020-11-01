@@ -1,15 +1,10 @@
 #!/bin/bash
 
-source conf.sh
+source `dirname "$0"`/conf.sh
 echo "Create SCM data on " $SCM_HOST
 
-scp conf.sh root@$SCM_HOST:/tmp/
-scp init_scm.sh root@$SCM_HOST:/tmp/
-scp gen_scm.sh root@$SCM_HOST:/tmp/
-scp dn_uuid.txt root@$SCM_HOST:/tmp/
-
-ssh root@$SCM_HOST mkdir /var/lib/hadoop-ozone/fake_scm
-ssh root@$SCM_HOST chmod 755 /var/lib/hadoop-ozone/fake_scm
-ssh root@$SCM_HOST chown -R hdfs:hdfs /var/lib/hadoop-ozone/fake_scm
-ssh root@$SCM_HOST sudo -u hdfs bash /tmp/init_scm.sh $SCM_HOST
-ssh root@$SCM_HOST sudo -u hdfs bash /tmp/gen_scm.sh $DN_TOTAL
+ssh $SSH_PASSWORDLESS_USER@$SCM_HOST sudo mkdir /var/lib/hadoop-ozone/fake_scm
+ssh $SSH_PASSWORDLESS_USER@$SCM_HOST sudo chmod 755 /var/lib/hadoop-ozone/fake_scm
+ssh $SSH_PASSWORDLESS_USER@$SCM_HOST sudo chown -R hdfs:hdfs /var/lib/hadoop-ozone/fake_scm
+ssh $SSH_PASSWORDLESS_USER@$SCM_HOST sudo -u hdfs bash $SCALE_OZONE_SCRIPT_DIR/init_scm.sh $SCM_HOST
+ssh $SSH_PASSWORDLESS_USER@$SCM_HOST sudo -u hdfs bash $SCALE_OZONE_SCRIPT_DIR/gen_scm.sh $DN_TOTAL

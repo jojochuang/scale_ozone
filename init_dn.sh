@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /tmp/conf.sh
+source `dirname "$0"`/conf.sh
 
 dn_id="$1"
 
@@ -9,7 +9,6 @@ DATA_GEN_INSTANCE_PER_DN=1
 ulimit -n 1048576
 ulimit -u 1048576
 
-export JAVA_HOME=/usr/java/jdk1.8.0_261-amd64
 #export HADOOP_OPTS="-Xmx40960M $HADOOP_OPTS"
 OZONE_FREON_OPTS_BASE="-Xmx81920M $OZONE_FREON_OPTS"
 
@@ -22,7 +21,7 @@ echo "Removing existing data from fake_datanode directory"
 rm -rf /var/lib/hadoop-ozone/fake_datanode/data
 rm -rf /var/lib/hadoop-ozone/datanode/ratis/data
 
-dn_uuid=`head -n${dn_id} /tmp/dn_uuid.txt |tail -n1`
+dn_uuid=`head -n${dn_id} $SCALE_OZONE_SCRIPT_DIR/dn_uuid.txt |tail -n1`
 
 sed -i "s/  uuid:.*/  uuid: $dn_uuid/" /var/lib/hadoop-ozone/datanode/datanode.id
 
@@ -69,6 +68,7 @@ for datagen_id in $(seq 0 $(($DATA_GEN_INSTANCE_PER_DN-1)) ); do
 	cp -R $OZONE_BINARY_ROOT/etc/hadoop $DN_DATAGEN_CONFIG_PATH
 
 	data_dir=${data_dirs[$datagen_id]}
+	# reduce log noise
 	cat >> $DN_DATAGEN_CONFIG_PATH/log4j.properties <<EOF
 log4j.logger.org.apache.hadoop.ozone.container.common.interfaces.Container=WARN
 EOF

@@ -1,31 +1,50 @@
 #!/bin/bash
 
 # shared variables 
-CLUSTER_DOMAIN=".ozone.cisco.local"
+CLUSTER_DOMAIN=".halxg.cloudera.com"
 # host name of SCM. Supports one SCM
-SCM_HOST="rhelnn04"$CLUSTER_DOMAIN
+SCM_HOST="vc1504"$CLUSTER_DOMAIN
 # OM host names. Can have more than 1 OM
-OM_HOSTS=("rhelnn01"$CLUSTER_DOMAIN "rhelnn02"$CLUSTER_DOMAIN  "rhelnn03"$CLUSTER_DOMAIN)
+OM_HOSTS=("vc1501"$CLUSTER_DOMAIN "vc1502"$CLUSTER_DOMAIN  "vc1503"$CLUSTER_DOMAIN)
 
 # the set of master nodes
-MASTERS=(rhelnn01 rhelnn02 rhelnn03 rhelnn04)
+MASTERS=(vc1501 vc1502 vc1503 vc1504)
 # the set of DataNode
-DN_HOSTNAME=(rhel01 rhel02 rhel03 rhel04 rhel05 rhel06 rhel07 rhel08 rhel09 rhel10 rhel11 rhel12 rhel13 rhel14 rhel15)
+DN_HOSTNAME=()
+for hostn in $(seq 217 242); do
+  DN_HOSTNAME=(${DN_HOSTNAME[@]} "vb0$hostn" )
+done
+for hostn in $(seq 1 9); do
+  DN_HOSTNAME=(${DN_HOSTNAME[@]} "vc150$hostn" )
+done
+DN_HOSTNAME=(${DN_HOSTNAME[@]} "vc1510" )
+#printf '<%s>\n' $DN_HOSTNAME
+#for i in ${DN_HOSTNAME[@]}; do
+#	echo $i
+#done
+#DN_HOSTNAME=(vb0217 vb0218 vb0219 vb0220 vb0221 vb0222 vb0223 vb0224 )
 # do not use  rhel16
 
 ALL_NODES=("${MASTERS[@]}" "${DN_HOSTNAME[@]}")
 DN_TOTAL=${#DN_HOSTNAME[@]}
 
-OZONE_BINARY_ROOT="/tmp/ozone-1.1.0-SNAPSHOT"
+SSH_PASSWORDLESS_USER="systest"
+SSH="ssh "
+SCP="scp -o \"StrictHostKeyChecking=no\""
 
-CLUSTER_ID=CID-32cf6a03-d481-4ba9-9b40-ba5bb36b1dce
-SCM_ID=e079e620-aa7e-4436-8016-df56f78a8b8b
-OM_ID=(c4af5c13-a967-4c83-8ae2-9e9e485085ac 470cc641-5ac9-479a-90b8-dbe3d8962eec aa21f9e7-5d10-450b-8d1a-527600af1409)
+OZONE_TARBALL="hadoop-ozone-1.1.0-SNAPSHOT.tar.gz"
+OZONE_BINARY_ROOT="/tmp/ozone-1.1.0-SNAPSHOT"
+SCALE_OZONE_SCRIPT_DIR="/tmp/scale_ozone"
+export JAVA_HOME="/usr/java/jdk1.8.0_232-cloudera/"
+
+CLUSTER_ID=CID-8599c3c8-b959-49fa-afd9-1b172d1c7f8e
+SCM_ID=89d97b84-7f6f-4bd6-950e-f091ee3b98d7
+OM_ID=(60ed85c6-5279-40db-a9eb-8f6718a21ae3 60ed85c6-5279-40db-a9eb-8f6718a21ae3 60ed85c6-5279-40db-a9eb-8f6718a21ae3)
 
 # 10M keys, 100k blocks per chunk, each key 1024 bytes
 # 10M keys, 1k blocks per chunk, each key 1024 bytes
 # 1B keys, 100k blocks per chunk, each key 1024 bytes (10k containers)
-TOTAL_KEYS=1000000000
+TOTAL_KEYS=100000
 BLOCKS_PER_CONTAINER=1024
 KEY_SIZE=$((1048576 / 1))
 REPLICATION_FACTOR=3

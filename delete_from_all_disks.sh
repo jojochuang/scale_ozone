@@ -1,5 +1,5 @@
 #!/bin/bash
-for disk in /data/disk*; do
+for disk in /data/*; do
 	rm -rf $disk/hadoop-ozone/datanode/data/hdds/* &
 done
 
