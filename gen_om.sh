@@ -7,6 +7,7 @@ ulimit -u 1048576
 
 dn_total="$1"
 dn_uuid=`head -n${dn_total} $SCALE_OZONE_SCRIPT_DIR/dn_uuid.txt | paste -sd "," -`
+OZONE_FREON_OPTS_BASE="-Xmx8192M $OZONE_FREON_OPTS"
 
 echo "Generating OM for " $dn_total " DataNodes."
 

@@ -2,5 +2,5 @@
 
 source `dirname "$0"`/conf.sh
 for i in ${ALL_NODES[@]}; do
-	ssh root@${i}$CLUSTER_DOMAIN "pkill -f freon" &
+	ssh $SSH_PASSWORDLESS_USER@${i}$CLUSTER_DOMAIN "sudo pkill -f freon" &
 done

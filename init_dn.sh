@@ -26,21 +26,21 @@ dn_uuid=`head -n${dn_id} $SCALE_OZONE_SCRIPT_DIR/dn_uuid.txt |tail -n1`
 sed -i "s/  uuid:.*/  uuid: $dn_uuid/" /var/lib/hadoop-ozone/datanode/datanode.id
 
 data_dirs=()
-DISKS_TOTAL=48
-DATAGEN_THREADS=96
+DISKS_TOTAL=3
+DATAGEN_THREADS=6
 
 function join_by { local IFS="$1"; shift; echo "$*"; }
 
-if [ "$dn_id" -eq "15" ]; then
+#if [ "$dn_id" -eq "15" ]; then
 	# the 15th DN has only 45 mount points
-	DISKS_TOTAL=45
-fi
+#	DISKS_TOTAL=45
+#fi
 
 for datagen_id in $(seq 0 $(( $DATA_GEN_INSTANCE_PER_DN -1 )) ); do
 	DISKS_PER_DATAGEN=$(( $DISKS_TOTAL / $DATA_GEN_INSTANCE_PER_DN ))
 	paths=()
 	for disk_id in $(seq $(( $DISKS_PER_DATAGEN * $datagen_id + 1 )) $(( $DISKS_PER_DATAGEN * ($datagen_id + 1)  ))); do
-		paths+=("/data/disk${disk_id}/hadoop-ozone/datanode/data")
+		paths+=("/data/${disk_id}/hadoop-ozone/datanode/data")
 	done
 	paths_string=$(IFS=, ; echo "${paths[*]}")
 	
@@ -116,7 +116,7 @@ EOF
 		</property>
 		<property>
 			<name>hdds.datanode.df.refresh.period</name>
-			<value>15m</value>
+			<value>7d</value>
 		</property>
 		<property>
 			<name>hdds.datanode.du.factory.classname</name>

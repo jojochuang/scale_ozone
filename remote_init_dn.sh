@@ -8,16 +8,14 @@ for i in "${DN_HOSTNAME[@]}"; do
 	hostname=$i$CLUSTER_DOMAIN
 	echo "Create DN data on " $hostname
 
-	ssh root@$hostname mkdir /var/lib/hadoop-ozone/fake_datanode
-	ssh root@$hostname chmod 755 /var/lib/hadoop-ozone/fake_datanode
-	ssh root@$hostname chown -R hdfs:hdfs /var/lib/hadoop-ozone/fake_datanode
+	ssh $SSH_PASSWORDLESS_USER@$hostname "sudo mkdir /var/lib/hadoop-ozone/fake_datanode; sudo chmod 755 /var/lib/hadoop-ozone/fake_datanode; sudo chown -R hdfs:hdfs /var/lib/hadoop-ozone/fake_datanode" &
 done
 
 dn_index=1
 
 for i in "${DN_HOSTNAME[@]}"; do
 	hostname=$i$CLUSTER_DOMAIN
-	ssh root@$hostname sudo -u hdfs bash $SCALE_OZONE_SCRIPT_DIR/init_dn.sh ${dn_index} &
+	ssh $SSH_PASSWORDLESS_USER@$hostname sudo -u hdfs bash $SCALE_OZONE_SCRIPT_DIR/init_dn.sh ${dn_index} &
 	dn_index=$(($dn_index + 1))
 done
 
