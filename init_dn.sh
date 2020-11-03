@@ -4,8 +4,6 @@ source `dirname "$0"`/conf.sh
 
 dn_id="$1"
 
-DATA_GEN_INSTANCE_PER_DN=1
-
 ulimit -n 1048576
 ulimit -u 1048576
 
@@ -26,8 +24,6 @@ dn_uuid=`head -n${dn_id} $SCALE_OZONE_SCRIPT_DIR/dn_uuid.txt |tail -n1`
 sed -i "s/  uuid:.*/  uuid: $dn_uuid/" /var/lib/hadoop-ozone/datanode/datanode.id
 
 data_dirs=()
-DISKS_TOTAL=3
-DATAGEN_THREADS=6
 
 function join_by { local IFS="$1"; shift; echo "$*"; }
 
@@ -97,7 +93,7 @@ EOF
 		</property>
 		<property>
 			<name>ozone.scm.names</name>
-			<value>$SCM_HOST</value>
+			<value>$SCM_HOST$CLUSTER_DOMAIN</value>
 		</property>
 		<!-- evict containers from memory quickly -->
 		<property>

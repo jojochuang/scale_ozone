@@ -3,10 +3,9 @@
 # shared variables 
 CLUSTER_DOMAIN=".halxg.cloudera.com"
 # host name of SCM. Supports one SCM
-SCM_HOST="vc1504"$CLUSTER_DOMAIN
+SCM_HOST="vc1504"
 # OM host names. Can have more than 1 OM
-#OM_HOSTS=("vc1501"$CLUSTER_DOMAIN "vc1502"$CLUSTER_DOMAIN  "vc1503"$CLUSTER_DOMAIN)
-OM_HOSTS=( "vc1502"$CLUSTER_DOMAIN  "vc1503"$CLUSTER_DOMAIN "vc1506"$CLUSTER_DOMAIN)
+OM_HOSTS=(vc1502  vc1503 vc1506)
 
 # the set of master nodes
 #MASTERS=(vc1501 vc1502 vc1503 vc1504)
@@ -38,6 +37,12 @@ OZONE_TARBALL="hadoop-ozone-1.1.0-SNAPSHOT.tar.gz"
 OZONE_BINARY_ROOT="/tmp/ozone-1.1.0-SNAPSHOT"
 SCALE_OZONE_SCRIPT_DIR="/tmp/scale_ozone"
 export JAVA_HOME="/usr/java/jdk1.8.0_232-cloudera/"
+# how many disks per DN
+DISKS_TOTAL=3
+# number of threads 
+DATAGEN_THREADS=6
+# number of data gen process on each DN
+DATA_GEN_INSTANCE_PER_DN=1
 
 CLUSTER_ID=CID-8599c3c8-b959-49fa-afd9-1b172d1c7f8e
 SCM_ID=89d97b84-7f6f-4bd6-950e-f091ee3b98d7
@@ -46,9 +51,9 @@ OM_ID=(60ed85c6-5279-40db-a9eb-8f6718a21ae3 60ed85c6-5279-40db-a9eb-8f6718a21ae3
 # 10M keys, 100k blocks per chunk, each key 1024 bytes
 # 10M keys, 1k blocks per chunk, each key 1024 bytes
 # 1B keys, 100k blocks per chunk, each key 1024 bytes (10k containers)
-TOTAL_KEYS=100000
-BLOCKS_PER_CONTAINER=1000
-KEY_SIZE=$((1048576 / 1))
+TOTAL_KEYS=100000000
+BLOCKS_PER_CONTAINER=100
+KEY_SIZE=$((300 * 1024))
 REPLICATION_FACTOR=3
 
 # either true or false

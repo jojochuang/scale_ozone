@@ -5,8 +5,7 @@ ulimit -n 1048576
 ulimit -u 1048576
 
 
-SCM_HOST=$1
-OM_INDEX=$2
+OM_INDEX=$1
 
 # run as 'hdfs' user
 # clean up O directory
@@ -39,7 +38,7 @@ cat > $OZONE_BINARY_ROOT/etc/hadoop/ozone-site.xml <<EOF
         </property>
         <property>
                 <name>ozone.scm.names</name>
-                <value>$SCM_HOST</value>
+                <value>$SCM_HOST$CLUSTER_DOMAIN</value>
         </property>
 </configuration>
 

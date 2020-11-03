@@ -2,8 +2,6 @@
 
 source `dirname "$0"`/conf.sh
 
-SCM_HOST=$1
-
 # this script runs on the SCM host
 # run as 'hdfs' user
 
@@ -27,7 +25,7 @@ cat > $OZONE_BINARY_ROOT/etc/hadoop/ozone-site.xml <<EOF
         </property>
         <property>
                 <name>ozone.scm.names</name>
-                <value>$SCM_HOST</value>
+                <value>$SCM_HOST$CLUSTER_DOMAIN</value>
         </property>
         <property>
                 <name>ozone.scm.datanode.id.dir</name>
