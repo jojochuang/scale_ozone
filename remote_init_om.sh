@@ -5,9 +5,9 @@ source `dirname "$0"`/conf.sh
 for OM_HOST in "${OM_HOSTS[@]}"; do
 	hostname=$OM_HOST$CLUSTER_DOMAIN
 	echo "setting up OM metadata directory for " $hostname
-	ssh $SSH_PASSWORDLESS_USER@$hostname sudo mkdir /var/lib/hadoop-ozone/fake_om
-	ssh $SSH_PASSWORDLESS_USER@$hostname sudo chmod 755 /var/lib/hadoop-ozone/fake_om
-	ssh $SSH_PASSWORDLESS_USER@$hostname sudo chown -R hdfs:hdfs /var/lib/hadoop-ozone/fake_om
+	ssh $SSH_PASSWORDLESS_USER@$hostname sudo mkdir $OM_DIR
+	ssh $SSH_PASSWORDLESS_USER@$hostname sudo chmod 755 $OM_DIR
+	ssh $SSH_PASSWORDLESS_USER@$hostname sudo chown -R hdfs:hdfs $OM_DIR
 done
 
 om_index=0

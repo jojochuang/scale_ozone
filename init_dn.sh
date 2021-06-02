@@ -4,7 +4,7 @@ source `dirname "$0"`/conf.sh
 
 dn_id="$1"
 
-ulimit -n 1048576
+ulimit -n 1024000
 ulimit -u 1048576
 
 #export HADOOP_OPTS="-Xmx40960M $HADOOP_OPTS"
@@ -12,12 +12,12 @@ OZONE_FREON_OPTS_BASE="-Xmx81920M $OZONE_FREON_OPTS"
 
 # run as 'hdfs' user
 # clean up O directory
-if [ ! -d "/var/lib/hadoop-ozone/fake_datanode" ]; then
-	mkdir /var/lib/hadoop-ozone/fake_datanode
+if [ ! -d $DN_DIR ]; then
+	mkdir $DN_DIR
 fi
-echo "Removing existing data from fake_datanode directory"
-rm -rf /var/lib/hadoop-ozone/fake_datanode/data
-rm -rf /var/lib/hadoop-ozone/datanode/ratis/data
+echo "Removing existing data from datanode directory"
+rm -rf $DN_DIR/data
+rm -rf $DN_DIR/ratis/data
 
 dn_uuid=`head -n${dn_id} $SCALE_OZONE_SCRIPT_DIR/dn_uuid.txt |tail -n1`
 
@@ -25,25 +25,32 @@ sed -i "s/  uuid:.*/  uuid: $dn_uuid/" /var/lib/hadoop-ozone/datanode/datanode.i
 
 data_dirs=()
 
-function join_by { local IFS="$1"; shift; echo "$*"; }
-
 #if [ "$dn_id" -eq "15" ]; then
 	# the 15th DN has only 45 mount points
 #	DISKS_TOTAL=45
 #fi
 
-for datagen_id in $(seq 0 $(( $DATA_GEN_INSTANCE_PER_DN -1 )) ); do
-	DISKS_PER_DATAGEN=$(( $DISKS_TOTAL / $DATA_GEN_INSTANCE_PER_DN ))
-	paths=()
-	for disk_id in $(seq $(( $DISKS_PER_DATAGEN * $datagen_id + 1 )) $(( $DISKS_PER_DATAGEN * ($datagen_id + 1)  ))); do
-		paths+=("/data/${disk_id}/hadoop-ozone/datanode/data")
-	done
-	paths_string=$(IFS=, ; echo "${paths[*]}")
-	
-	data_dirs+=($paths_string)
+if [ "$DN_DATA_DIR_TYPE" = "ycloud" ]; then
+	data_dirs+=("/hadoop-ozone/datanode/data")
+elif [ "$DN_DATA_DIR_TYPE" = "phatcat" ]; then
+	for datagen_id in $(seq 0 $(( $DATA_GEN_INSTANCE_PER_DN -1 )) ); do
+		DISKS_PER_DATAGEN=$(( $DISKS_TOTAL / $DATA_GEN_INSTANCE_PER_DN ))
+		paths=()
+		for disk_id in $(seq $(( $DISKS_PER_DATAGEN * $datagen_id + 1 )) $(( $DISKS_PER_DATAGEN * ($datagen_id + 1)  ))); do
+			paths+=("/data/${disk_id}/hadoop-ozone/datanode/data")
+		done
+		paths_string=$(IFS=, ; echo "${paths[*]}")
+		
+		data_dirs+=($paths_string)
 
-	echo $paths_string
-done
+		echo $paths_string
+	done
+elif [ "$DN_DATA_DIR_TYPE" = "custom" ]; then
+	echo "make sure you update $data_dirs based on the real cluster configuration"
+else
+	echo "Unknown DN_DATA_DIR_TYPE"
+	return -1
+fi
 
 DN_DATAGEN_CONFIG_PATHS=()
 for datagen in $(seq 1 $DATA_GEN_INSTANCE_PER_DN); do
@@ -73,11 +80,11 @@ EOF
 	<configuration>
 		<property>
 			<name>ozone.scm.db.dirs</name>
-			<value>/var/lib/hadoop-ozone/fake_scm/data</value>
+			<value>$DN_DIR/data</value>
 		</property>
 		<property>
 			<name>ozone.om.db.dirs</name>
-			<value>/var/lib/hadoop-ozone/fake_om/data</value>
+			<value>$OM_DIR/data</value>
 		</property>
 		<property>
 			<name>ozone.scm.datanode.id.dir</name>
@@ -89,7 +96,7 @@ EOF
 		</property>
 		<property>
 			<name>ozone.metadata.dirs</name>
-			<value>/var/lib/hadoop-ozone/fake_datanode/ozone-metadata</value>
+			<value>$DN_DIR/ozone-metadata</value>
 		</property>
 		<property>
 			<name>ozone.scm.names</name>
@@ -124,58 +131,58 @@ EOF
 
 	cd $OZONE_BINARY_ROOT/bin
 
-	TOTAL_CONTAINERS=$(( $TOTAL_KEYS / $BLOCKS_PER_CONTAINER ))
+        
+	#TOTAL_CONTAINERS=$(( $TOTAL_KEYS / $BLOCKS_PER_CONTAINER ))
 	container_id_increment=$(( $DN_TOTAL / 3 ))
 	CONTAINERS_PER_DN=$(( $TOTAL_CONTAINERS / $container_id_increment ))
 	#container_id_offset=$(( $CONTAINERS_PER_DN * (($dn_id - 1) / 3) ))
 	container_id_offset=$(( (($dn_id - 1) / 3) ))
 
-	TOTAL_KEYS_FOR_THIS_DATAGEN_INSTANCE=$(( $TOTAL_KEYS / $DATA_GEN_INSTANCE_PER_DN ))
-	TOTAL_CONTAINERS_FOR_THIS_DATAGEN_INSTANCE=$(( $TOTAL_KEYS_FOR_THIS_DATAGEN_INSTANCE / $BLOCKS_PER_CONTAINER ))
-	key_id_offset=$(( $TOTAL_KEYS_FOR_THIS_DATAGEN_INSTANCE * $datagen_id ))
+	#TOTAL_KEYS_FOR_THIS_DATAGEN_INSTANCE=$(( $TOTAL_KEYS / $DATA_GEN_INSTANCE_PER_DN ))
+	TOTAL_CONTAINERS_FOR_THIS_DATAGEN_INSTANCE=$((  TOTAL_CONTAINERS / $DN_TOTAL * 3 ))
+	#key_id_offset=$(( $TOTAL_KEYS_FOR_THIS_DATAGEN_INSTANCE * $datagen_id ))
 
 	echo "TOTAL_CONTAINERS=$TOTAL_CONTAINERS"
 	echo "CONTAINERS_PER_DN=$CONTAINERS_PER_DN"
 	echo "container_id_offset=$container_id_offset"
 	echo "container_id_increment=$container_id_increment"
-	echo "key_id_offset=$key_id_offset"
+	#echo "key_id_offset=$key_id_offset"
 
 	echo "Running Freon to generate data chunks and db"
 
 	if [ "$DRY_RUN" = true ]; then
 		cat <<EOF
- ./ozone --config $DN_DATAGEN_CONFIG_PATH freon cg \
-			--user-id hdfs \
-			--cluster-id $CLUSTER_ID \
-			--datanode-id $dn_uuid \
-			--scm-id $SCM_ID \
-			--block-per-container $BLOCKS_PER_CONTAINER \
-			--size $KEY_SIZE \
-			--om-key-batch-size 10000 \
-			--write-dn \
-			--repl $REPLICATION_FACTOR \
+ ./ozone --config $DN_DATAGEN_CONFIG_PATH freon cgdn \
+			--user hdfs \
+	                --size $CONTAINER_SIZE \
+			--key-size $KEY_SIZE \
 			-t $DATAGEN_THREADS \
 			-n $TOTAL_CONTAINERS_FOR_THIS_DATAGEN_INSTANCE \
-			--container-id-offset $container_id_offset \
-			--container-id-increment $container_id_increment \
-			--key-id-offset $key_id_offset &
+                        --datanodes $DN_TOTAL \
+                        --index $dn_id \
+                        --zero
 EOF
 	else
-		./ozone --config $DN_DATAGEN_CONFIG_PATH freon cg \
-			--user-id hdfs \
-			--cluster-id $CLUSTER_ID \
-			--datanode-id $dn_uuid \
-			--scm-id $SCM_ID \
-			--block-per-container $BLOCKS_PER_CONTAINER \
-			--size $KEY_SIZE \
-			--om-key-batch-size 10000 \
-			--write-dn \
-			--repl $REPLICATION_FACTOR \
+		./ozone --config $DN_DATAGEN_CONFIG_PATH freon cgdn \
+			--user hdfs \
+	                --size $CONTAINER_SIZE \
+			--key-size $KEY_SIZE \
 			-t $DATAGEN_THREADS \
 			-n $TOTAL_CONTAINERS_FOR_THIS_DATAGEN_INSTANCE \
-			--container-id-offset $container_id_offset \
-			--container-id-increment $container_id_increment \
-			--key-id-offset $key_id_offset 2>&1 | tee $DN_DATAGEN_CONFIG_PATH/init_dn.log &
+                        --datanodes $DN_TOTAL \
+                        --index $dn_id \
+                        --zero \
+                        2>&1 | tee $DN_DATAGEN_CONFIG_PATH/init_dn.log &
+			#--datanode-id $dn_uuid \
+			#--cluster-id $CLUSTER_ID \
+			#--scm-id $SCM_ID \
+			#--block-per-container $BLOCKS_PER_CONTAINER \
+			#--write-dn \
+			#--om-key-batch-size 10000 \
+			#--repl $REPLICATION_FACTOR \
+			#--container-id-offset $container_id_offset \
+			#--container-id-increment $container_id_increment \
+			#--key-id-offset $key_id_offset \
 	fi
 
 done

@@ -8,7 +8,7 @@ for i in "${DN_HOSTNAME[@]}"; do
 	hostname=$i$CLUSTER_DOMAIN
 	echo "Create DN data on " $hostname
 
-	ssh $SSH_PASSWORDLESS_USER@$hostname "sudo mkdir /var/lib/hadoop-ozone/fake_datanode; sudo chmod 755 /var/lib/hadoop-ozone/fake_datanode; sudo chown -R hdfs:hdfs /var/lib/hadoop-ozone/fake_datanode" &
+	ssh $SSH_PASSWORDLESS_USER@$hostname "sudo mkdir $DN_DIR; sudo chmod 755 $DN_DIR; sudo chown -R hdfs:hdfs $DN_DIR" &
 done
 
 dn_index=1

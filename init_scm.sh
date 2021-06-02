@@ -6,10 +6,10 @@ source `dirname "$0"`/conf.sh
 # run as 'hdfs' user
 
 # clean up SCM directory
-if [ ! -d "/var/lib/hadoop-ozone/fake_scm" ]; then
-	mkdir /var/lib/hadoop-ozone/fake_scm
+if [ ! -d $SCM_DIR ]; then
+	mkdir $SCM_DIR
 fi
-rm -rf /var/lib/hadoop-ozone/fake_scm/data
+rm -rf $SCM_DIR/data
 
 
 cat > $OZONE_BINARY_ROOT/etc/hadoop/ozone-site.xml <<EOF
@@ -17,11 +17,11 @@ cat > $OZONE_BINARY_ROOT/etc/hadoop/ozone-site.xml <<EOF
 <configuration>
         <property>
                 <name>ozone.scm.db.dirs</name>
-                <value>/var/lib/hadoop-ozone/fake_scm/data</value>
+                <value>$SCM_DIR/data</value>
         </property>
         <property>
                 <name>ozone.om.db.dirs</name>
-                <value>/var/lib/hadoop-ozone/fake_om/data</value>
+                <value>$OM_DIR/data</value>
         </property>
         <property>
                 <name>ozone.scm.names</name>
@@ -33,14 +33,14 @@ cat > $OZONE_BINARY_ROOT/etc/hadoop/ozone-site.xml <<EOF
         </property>
         <property>
                 <name>ozone.metadata.dirs</name>
-                <value>/var/lib/hadoop-ozone/fake_datanode/ozone-metadata</value>
+                <value>$DN_DIR/ozone-metadata</value>
         </property>
 </configuration>
 
 EOF
 
-mkdir -p /var/lib/hadoop-ozone/fake_scm/data/scm/current
-cat >  /var/lib/hadoop-ozone/fake_scm/data/scm/current/VERSION <<EOF
+mkdir -p $SCM_DIR/data/scm/current
+cat >  $SCM_DIR/data/scm/current/VERSION <<EOF
 #Thu Sep 24 08:50:03 UTC 2020
 nodeType=SCM
 scmUuid=$SCM_ID
@@ -51,6 +51,6 @@ EOF
 
 cd $OZONE_BINARY_ROOT/bin
 #./ozone scm --init
-cat /var/lib/hadoop-ozone/fake_scm/data/scm/current/VERSION
+cat $SCM_DIR/data/scm/current/VERSION
 
 #./ozone scm
