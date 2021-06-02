@@ -33,9 +33,10 @@ The tool assumes the DN volumes are mounted at directory /data/1, /data/2, /data
                 paths+=("/data/${disk_id}/hadoop-ozone/datanode/data")
         done
         
-2. Run ./remote_sys_init.sh to update ulimits on all nodes.
-3. Run ./copy_scripts.sh to copy the scripts to all nodes.
-4. Run ./remote_init.sh to generate OM, SCM and DN data.
-5. The OM db is generated under /var/lib/hadoop-ozone/fake_om; The SCM db under /var/lib/hadoop-ozone/fake_scm. Make sure to update cluster configuration before start.
+2. Run ./copy_scripts.sh to copy the scripts to all nodes.
+3. Copy the Ozone tarball to /tmp, and run ./deploy_ozone_tarball.sh
+4. Run ./remote_sys_init.sh to update ulimits on all nodes.
+5. Run ./remote_init.sh to generate OM, SCM and DN data.
+6. The OM db is generated under /var/lib/hadoop-ozone/fake_om; The SCM db under /var/lib/hadoop-ozone/fake_scm. Make sure to update cluster configuration before start.
 
 That's it!
