@@ -17,7 +17,8 @@ if [ ! -d $DN_DIR ]; then
 fi
 echo "Removing existing data from datanode directory"
 rm -rf $DN_DIR/data
-rm -rf $DN_DIR/ratis/data
+#rm -rf $DN_DIR/ratis/data
+rm -rf /data/19/hadoop-ozone/datanode/ratis/data/*
 
 dn_uuid=`head -n${dn_id} $SCALE_OZONE_SCRIPT_DIR/dn_uuid.txt |tail -n1`
 
@@ -46,7 +47,21 @@ elif [ "$DN_DATA_DIR_TYPE" = "phatcat" ]; then
 		echo $paths_string
 	done
 elif [ "$DN_DATA_DIR_TYPE" = "custom" ]; then
-	echo "make sure you update $data_dirs based on the real cluster configuration"
+	#echo "make sure you update $data_dirs based on the real cluster configuration"
+	for datagen_id in $(seq 0 $(( $DATA_GEN_INSTANCE_PER_DN -1 )) ); do
+		DISKS_PER_DATAGEN=$(( $DISKS_TOTAL / $DATA_GEN_INSTANCE_PER_DN ))
+		paths=()
+		for disk_id in $(seq $(( $DISKS_PER_DATAGEN * $datagen_id + 1 )) $(( $DISKS_PER_DATAGEN * ($datagen_id + 1)  ))); do
+			if [[ $disk_id -ne 19 ]]; then
+				paths+=("/data/${disk_id}/hadoop-ozone/datanode/data")
+			fi
+		done
+		paths_string=$(IFS=, ; echo "${paths[*]}")
+		
+		data_dirs+=($paths_string)
+
+		echo $paths_string
+	done
 else
 	echo "Unknown DN_DATA_DIR_TYPE"
 	return -1
@@ -134,18 +149,22 @@ EOF
         
 	#TOTAL_CONTAINERS=$(( $TOTAL_KEYS / $BLOCKS_PER_CONTAINER ))
 	container_id_increment=$(( $DN_TOTAL / 3 ))
-	CONTAINERS_PER_DN=$(( $TOTAL_CONTAINERS / $container_id_increment ))
+	#CONTAINERS_PER_DN=$(( $TOTAL_CONTAINERS / $container_id_increment ))
 	#container_id_offset=$(( $CONTAINERS_PER_DN * (($dn_id - 1) / 3) ))
-	container_id_offset=$(( (($dn_id - 1) / 3) ))
+	#container_id_offset=$(( (($dn_id - 1) / 3) ))
 
 	#TOTAL_KEYS_FOR_THIS_DATAGEN_INSTANCE=$(( $TOTAL_KEYS / $DATA_GEN_INSTANCE_PER_DN ))
 	TOTAL_CONTAINERS_FOR_THIS_DATAGEN_INSTANCE=$((  TOTAL_CONTAINERS / $DN_TOTAL * 3 ))
 	#key_id_offset=$(( $TOTAL_KEYS_FOR_THIS_DATAGEN_INSTANCE * $datagen_id ))
 
 	echo "TOTAL_CONTAINERS=$TOTAL_CONTAINERS"
-	echo "CONTAINERS_PER_DN=$CONTAINERS_PER_DN"
-	echo "container_id_offset=$container_id_offset"
-	echo "container_id_increment=$container_id_increment"
+	echo "KEY_SIZE=$KEY_SIZE"
+	echo "DN_TOTAL=$DN_TOTAL"
+	echo "dn_id=$dn_id"
+	echo "TOTAL_CONTAINERS_FOR_THIS_DATAGEN_INSTANCE=$TOTAL_CONTAINERS_FOR_THIS_DATAGEN_INSTANCE"
+	#echo "CONTAINERS_PER_DN=$CONTAINERS_PER_DN"
+	#echo "container_id_offset=$container_id_offset"
+	#echo "container_id_increment=$container_id_increment"
 	#echo "key_id_offset=$key_id_offset"
 
 	echo "Running Freon to generate data chunks and db"

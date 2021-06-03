@@ -1,5 +1,5 @@
 #!/bin/bash
-
+./copy_scripts.sh 
 ./remote_init_scm.sh &
 ./remote_init_om.sh &
 ./remote_init_dn.sh &

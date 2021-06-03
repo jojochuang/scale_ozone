@@ -19,7 +19,17 @@ elif [ "$DN_DATA_DIR_TYPE" = "phatcat" ]; then
 		fi
 	done
 elif [ "$DN_DATA_DIR_TYPE" = "custom" ]; then
-	echo "don't know what to do with data dir type " $DN_DATA_DIR_TYPE
+	#echo "don't know what to do with data dir type " $DN_DATA_DIR_TYPE
+	for disk in /data/*; do
+		for scmid in $disk/hadoop-ozone/datanode/data/hdds/*; do
+			echo $scmid
+			if [[ "$scmid" =~ "VERSION" ]]; then
+				echo "skip VERSION fie"
+			else
+				rm -rf $scmid/* &
+			fi
+		done
+	done
 else
 	echo "don't know what to do with data dir type " $DN_DATA_DIR_TYPE
 fi
