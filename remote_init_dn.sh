@@ -2,7 +2,11 @@
 
 source `dirname "$0"`/conf.sh
 
-./delete_from_all_dn.sh
+if [ "$PRESERVE_EXISTING_DATA" = true ]; then
+	echo "preserve existing data"
+else
+	./delete_from_all_dn.sh
+fi
 
 for i in "${DN_HOSTNAME[@]}"; do
 	hostname=$i$CLUSTER_DOMAIN

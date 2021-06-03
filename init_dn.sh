@@ -14,10 +14,14 @@ OZONE_FREON_OPTS_BASE="-Xmx81920M $OZONE_FREON_OPTS"
 if [ ! -d $DN_DIR ]; then
 	mkdir $DN_DIR
 fi
-echo "Removing existing data from datanode directory"
-rm -rf $DN_DIR/data
-#rm -rf $DN_DIR/ratis/data
-rm -rf /data/19/hadoop-ozone/datanode/ratis/data/*
+if [ "$PRESERVE_EXISTING_DATA" = true ]; then
+	echo "preserve existing data"
+else
+	echo "Removing existing data from datanode directory"
+	rm -rf $DN_DIR/data
+	#rm -rf $DN_DIR/ratis/data
+	rm -rf /data/19/hadoop-ozone/datanode/ratis/data/*
+fi
 
 dn_uuid=`head -n${dn_id} $SCALE_OZONE_SCRIPT_DIR/dn_uuid.txt |tail -n1`
 
@@ -178,6 +182,7 @@ EOF
 			-n $TOTAL_CONTAINERS_FOR_THIS_DATAGEN_INSTANCE \
                         --datanodes $DN_TOTAL \
                         --index $dn_id \
+                        --from $CONTAINER_OFFSET \
                         --zero
 EOF
 	else
@@ -189,6 +194,7 @@ EOF
 			-n $TOTAL_CONTAINERS_FOR_THIS_DATAGEN_INSTANCE \
                         --datanodes $DN_TOTAL \
                         --index $dn_id \
+                        --from $CONTAINER_OFFSET \
                         --zero \
                         2>&1 | tee $DN_DATAGEN_CONFIG_PATH/init_dn.log &
 			#--datanode-id $dn_uuid \

@@ -9,7 +9,12 @@ source `dirname "$0"`/conf.sh
 if [ ! -d $SCM_DIR ]; then
 	mkdir $SCM_DIR
 fi
-rm -rf $SCM_DIR/data
+if [ "$PRESERVE_EXISTING_DATA" = true ]; then
+	echo "preserve existing data"
+else
+	rm -rf $SCM_DIR/data/*
+	rm -rf $SCM_DIR/ratis/*
+fi
 
 
 cat > $OZONE_BINARY_ROOT/etc/hadoop/ozone-site.xml <<EOF

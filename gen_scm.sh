@@ -14,6 +14,7 @@ command="./ozone freon cgscm
 	--size $CONTAINER_SIZE \
         --key-size $KEY_SIZE \
 	-t 8 \
+	--from $CONTAINER_OFFSET \
 	-n $TOTAL_CONTAINERS"
         #--cluster-id=$CLUSTER_ID \
 	#--datanode-id=$dn_uuid \

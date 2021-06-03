@@ -12,8 +12,13 @@ OM_INDEX=$1
 if [ ! -d $OM_DIR ]; then
 	mkdir $OM_DIR
 fi
-rm -rf $OM_DIR/ratis/*
-rm -rf $OM_DIR/data
+
+if [ "$PRESERVE_EXISTING_DATA" = true ]; then
+	echo "preserve existing data"
+else
+	rm -rf $OM_DIR/ratis/*
+	rm -rf $OM_DIR/data/*
+fi
 chmod 777 -R $OM_DIR
 mkdir -p $OM_DIR/data/om/current
 

@@ -23,7 +23,8 @@ export OZONE_FREON_OPTS="$PROFILER $OZONE_FREON_OPTS_BASE"
 command="./ozone freon cgom --user hdfs \
 	--size $CONTAINER_SIZE \
         --key-size $KEY_SIZE \
-	-t 64
+	-t 64 \
+	--from $CONTAINER_OFFSET \
 	-n $TOTAL_CONTAINERS"
 	#--om-key-batch-size 10000 \
 	#--repl $REPLICATION_FACTOR \
