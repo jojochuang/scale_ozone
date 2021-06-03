@@ -23,9 +23,14 @@ The scripts make the following assumption:
 | JAVA_HOME             | path to Java                         | /usr/java/jdk1.8.0_232-cloudera/   |
 | DISKS_TOTAL           | number of disks per DN               | 3                                  |
 | DATAGEN_THREADS       | number of threads in the DN data gen | 6                                  |
-| TOTAL_KEYS            | number of keys. e.g. 100 million     | 100000000                          |
-| BLOCKS_PER_CONTAINER  | number of blocks per container       | 100                                |
+| OM_DIR                | OM directory                         | /var/lib/hadoop-ozone/om           |
+| SCM_DIR               | SCM directory                        | /var/lib/hadoop-ozone/scm          |
+| DN_DIR                | DN ID directory                      | /var/lib/hadoop-ozone/dn           |
+| DN_DATA_DIR_TYPE      | location of the cluster              | ycloud                             |
+| CONTAINER_SIZE        | max size of a container              | 5368709120 (5GB)                   |
 | KEY_SIZE              | Key file length. e.g. 300KB          | 307200                             |
+| TOTAL_CONTAINERS      | total containers in the cluster      | 100000000                          |
+| TOTAL_KEYS            | number of keys. e.g. 100 million     | 1024                               |
 
 The tool assumes the DN volumes are mounted at directory /data/1, /data/2, /data3. If the DNs mount volumes at different path, update init_dn.sh.
 

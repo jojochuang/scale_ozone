@@ -7,7 +7,6 @@ dn_id="$1"
 ulimit -n 1024000
 ulimit -u 1048576
 
-#export HADOOP_OPTS="-Xmx40960M $HADOOP_OPTS"
 OZONE_FREON_OPTS_BASE="-Xmx81920M $OZONE_FREON_OPTS"
 
 # run as 'hdfs' user
@@ -211,9 +210,3 @@ do
 	echo "Waiting for completion of data generator " $job
 	wait $job
 done
-
-
-#for datagen_id in $(seq 1 $DATA_GEN_INSTANCE_PER_DN); do
-#	DN_DATAGEN_CONFIG_PATH=${DN_DATAGEN_CONFIG_PATHS[$datagen_id-1]}
-#	rm -rf $DN_DATAGEN_CONFIG_PATH
-#done
