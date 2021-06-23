@@ -17,7 +17,9 @@ if [ "$PRESERVE_EXISTING_DATA" = true ]; then
 	echo "preserve existing data"
 else
 	rm -rf $OM_DIR/ratis/*
-	rm -rf $OM_DIR/data/*
+	rm -rf $OM_DIR/data/db.checkpoints
+	rm -rf $OM_DIR/data/om.db
+	rm -rf $OM_DIR/data/omMetrics
 fi
 chmod 777 -R $OM_DIR
 mkdir -p $OM_DIR/data/om/current
@@ -51,18 +53,18 @@ EOF
 
 OM_UUID=${OM_ID[$OM_INDEX]}
 
-cat >  $OM_DIR/data/om/current/VERSION <<EOF
-#Tue Sep 22 23:33:48 UTC 2020
-nodeType=OM
-scmUuid=$SCM_ID
-clusterID=$CLUSTER_ID
-cTime=1600817627795
-omUuid=$OM_UUID
-layoutVersion=0
-EOF
+#cat >  $OM_DIR/data/om/current/VERSION <<EOF
+##Tue Sep 22 23:33:48 UTC 2020
+#nodeType=OM
+#scmUuid=$SCM_ID
+#clusterID=$CLUSTER_ID
+#cTime=1600817627795
+#omUuid=$OM_UUID
+#layoutVersion=0
+#EOF
 
-cd $OZONE_BINARY_ROOT/bin
-./ozone om --init
-cat $OM_DIR/data/om/current/VERSION
+#cd $OZONE_BINARY_ROOT/bin
+#./ozone om --init
+#cat $OM_DIR/data/om/current/VERSION
 #./ozone om
 

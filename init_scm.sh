@@ -12,7 +12,8 @@ fi
 if [ "$PRESERVE_EXISTING_DATA" = true ]; then
 	echo "preserve existing data"
 else
-	rm -rf $SCM_DIR/data/*
+	rm -rf $SCM_DIR/data/db.checkpoints
+	rm -rf $SCM_DIR/data/scm.db
 	rm -rf $SCM_DIR/ratis/*
 fi
 
@@ -44,18 +45,17 @@ cat > $OZONE_BINARY_ROOT/etc/hadoop/ozone-site.xml <<EOF
 
 EOF
 
-mkdir -p $SCM_DIR/data/scm/current
-cat >  $SCM_DIR/data/scm/current/VERSION <<EOF
-#Thu Sep 24 08:50:03 UTC 2020
-nodeType=SCM
-scmUuid=$SCM_ID
-clusterID=$CLUSTER_ID
-cTime=1600937403500
-layoutVersion=0
-EOF
+#mkdir -p $SCM_DIR/data/scm/current
+#cat >  $SCM_DIR/data/scm/current/VERSION <<EOF
+##Thu Sep 24 08:50:03 UTC 2020
+#nodeType=SCM
+#scmUuid=$SCM_ID
+#clusterID=$CLUSTER_ID
+#cTime=1600937403500
+#layoutVersion=0
+#EOF
 
 cd $OZONE_BINARY_ROOT/bin
 #./ozone scm --init
 cat $SCM_DIR/data/scm/current/VERSION
 
-#./ozone scm

@@ -13,7 +13,7 @@ echo "Generating OM for " $dn_total " DataNodes."
 
 cd $OZONE_BINARY_ROOT/bin
 
-PROFILER_PORT="1089"
+PROFILER_PORT="1079"
 PROFILER="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=$PROFILER_PORT -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
 export OZONE_FREON_OPTS="$PROFILER $OZONE_FREON_OPTS_BASE"
 
